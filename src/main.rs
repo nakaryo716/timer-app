@@ -1,8 +1,15 @@
-use core::time;
-use std::{sync::{mpsc, atomic::AtomicUsize}, thread::{self, sleep}, env};
+use utilities::utility::{input_stream, timer};
 use std::sync::atomic::Ordering;
-use proconio::input;
+use std::{
+    env,
+    sync::{atomic::AtomicUsize, mpsc},
+    thread,
+};
 use tracing::debug;
+
+use crate::utilities::utility::select_mode_ui;
+
+mod utilities;
 
 // RUST_LOG=debug cargo run
 
@@ -10,24 +17,23 @@ fn main() {
     let log_level = env::var("RUST_LOG").unwrap_or("info".to_string());
     env::set_var("RUST_LOG", log_level);
     tracing_subscriber::fmt::init();
-    
 
     let (tx, rx) = mpsc::channel();
     static TIME: AtomicUsize = AtomicUsize::new(0);
 
-
     let init_thread = thread::spawn(move || {
+        select_mode_ui();
         loop {
             let mode = input_stream();
 
-            if mode == 0{
+            if mode == 0 {
                 tx.send(false).unwrap();
                 break;
             }
 
-           
+            println!("How many times do you want to count?");
             let input_time = input_stream();
-            
+            println!("-------------------------------------");
 
             TIME.store(input_time, Ordering::Release);
             tx.send(true).unwrap();
@@ -40,14 +46,16 @@ fn main() {
         while rx.recv().unwrap() {
             debug!("start timer thread");
             let selected = TIME.load(Ordering::Acquire);
-            
+
             debug!("timer thread got {} s", selected);
 
             if selected == 0 {
+                select_mode_ui();
                 continue;
             } else {
-                timer2(selected);
+                timer(selected);
                 println!("Time up!");
+                select_mode_ui();
             }
         }
         debug!("finish timer thread");
@@ -55,23 +63,4 @@ fn main() {
 
     init_thread.join().unwrap();
     timer_thread.join().unwrap();
-}
-
-
-
-fn timer2(time: usize) {
-    let timer = thread::spawn(move || {
-        for i in 0..time {
-            sleep(time::Duration::from_secs(1));
-            println!("{} s", i + 1);
-        }
-    });
-    timer.join().unwrap();
-}
-
-fn input_stream() -> usize {
-    input! {
-        number: usize,
-    }
-    number
 }
