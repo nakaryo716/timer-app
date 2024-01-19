@@ -1,4 +1,5 @@
 use crate::utilities::sound::alarm;
+use crate::utilities::utility::get_direcrory;
 use std::sync::atomic::Ordering;
 use std::{
     env,
@@ -16,9 +17,12 @@ mod utilities;
 
 fn main() {
     // Setting log environment.
-    let log_level = env::var("RUST_LOG").unwrap_or("info".to_string());
+    let log_level = env::var("RUST_LOG").unwrap_or("error".to_string());
     env::set_var("RUST_LOG", log_level);
     tracing_subscriber::fmt::init();
+
+    let mut path = get_direcrory();
+    path.push("assets/Alarm1.mp3");
 
     let (tx, rx) = mpsc::channel();
     static TIME: AtomicUsize = AtomicUsize::new(0);
@@ -58,7 +62,10 @@ fn main() {
             } else {
                 timer(selected);
                 println!("Time up!");
-                alarm();
+
+                // alarm thread may panic
+                // Whene alarm thread is paniced, main thread will panic
+                alarm(&path).unwrap();
                 select_mode_ui();
             }
         }
@@ -67,4 +74,6 @@ fn main() {
 
     init_thread.join().unwrap();
     timer_thread.join().unwrap();
+
+    println!("exit status 0");
 }
