@@ -15,9 +15,9 @@ pub fn timer(time: usize) {
     timer.join().unwrap();
 }
 
-pub fn input_stream() -> usize {
+pub fn input_stream() -> usize{
     input! {
-        number: usize,
+        number: usize
     }
     number
 }
@@ -25,9 +25,10 @@ pub fn input_stream() -> usize {
 pub fn select_mode_ui() {
     println!(
         "
-Select mode.
-If you exit this app, you input 0.
-If, you want count time, you input any numver key.     
+Please choose a mode.
+If you want to exit this application, please enter 0.
+If you'd like to start counting, press any number key.
     "
     );
 }
+
