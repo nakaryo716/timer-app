@@ -15,7 +15,7 @@ pub fn timer(time: usize) {
     timer.join().unwrap();
 }
 
-pub fn input_stream() -> usize{
+pub fn input_stream() -> usize {
     input! {
         number: usize
     }
@@ -31,4 +31,3 @@ If you'd like to start counting, press any number key.
     "
     );
 }
-

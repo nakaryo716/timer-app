@@ -1,3 +1,4 @@
+use crate::utilities::sound::alarm;
 use std::sync::atomic::Ordering;
 use std::{
     env,
@@ -5,7 +6,7 @@ use std::{
     thread,
 };
 use tracing::debug;
-use utilities::utility::{input_stream, timer, select_mode_ui};
+use utilities::utility::{input_stream, select_mode_ui, timer};
 
 mod utilities;
 
@@ -57,6 +58,7 @@ fn main() {
             } else {
                 timer(selected);
                 println!("Time up!");
+                alarm();
                 select_mode_ui();
             }
         }
