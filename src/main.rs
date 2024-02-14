@@ -59,15 +59,15 @@ fn main() {
             if selected == 0 {
                 select_mode_ui();
                 continue;
-            } else {
-                timer(selected);
-                println!("Time up!");
-
-                // alarm thread may panic
-                // Whene alarm thread is paniced, main thread will panic
-                alarm(&path).unwrap();
-                select_mode_ui();
             }
+
+            timer(selected);
+            println!("Time up!");
+
+            // alarm thread may panic
+            // Whene alarm thread is paniced, main thread will panic
+            alarm(&path).unwrap();
+            select_mode_ui();
         }
         debug!("exit timer thread loop");
     });
